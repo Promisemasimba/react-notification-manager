@@ -27,8 +27,9 @@ type NotificationManagerReducerActions =
 
 const NotificationContext = React.createContext<NotificationContextType | void>();
 
-// Shared logic for custom hook and renderprop api
-const consumerContextProvider = context => {
+export const useNotificationManager = () => {
+    const context = React.useContext(NotificationContext);
+
     if (!context) {
         throw new Error(
             "useNotificationManager and NotificationConsumer must be used within a NotificationProvider"
@@ -36,21 +37,6 @@ const consumerContextProvider = context => {
     }
     return context;
 };
-
-// Consumer Hook
-export const useNotificationManager = () =>
-    consumerContextProvider(React.useContext(NotificationContext));
-
-// Consumer renderprop API (< 16.8)
-export const NotificationConsumer = ({
-    children,
-}: {
-    children: NotificationContextType => React.Node,
-}) => (
-    <NotificationContext.Consumer>
-        {context => children(consumerContextProvider(context))}
-    </NotificationContext.Consumer>
-);
 
 const initialState = {
     active: null,
