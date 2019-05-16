@@ -1,83 +1,112 @@
 //@flow
 import * as React from "react";
-import ReactDOM from "react-dom";
+import { Portal } from "reakit/Portal";
 
-export const Context = React.createContext();
-
-let portalContainer: HTMLDivElement = window.document.createElement("div");
-
-type ComponentRenderProps = {|
+type NotificationRender = ({|
     close: () => void,
+|}) => React.Node;
+
+type NotificationContextType = {|
+    createNotification: (render: NotificationRender) => void,
+    closeNotification: () => void,
 |};
 
-type ComponentRenderFunction = ComponentRenderProps => React.Node;
+type NotificationManagerReducerState = {|
+    active: ?React.Node,
+    queue: Array<() => React.Node>,
+|};
 
-type Props = {
-    children: React.Node,
+type NotificationManagerReducerActions =
+    | {|
+          type: "CREATE",
+          render: () => React.Node,
+      |}
+    | {|
+          type: "CLOSE",
+      |};
+
+const NotificationContext = React.createContext<NotificationContextType | void>();
+
+// Shared logic for custom hook and renderprop api
+const consumerContextProvider = context => {
+    if (!context) {
+        throw new Error(
+            "useNotificationManager and NotificationConsumer must be used within a NotificationProvider"
+        );
+    }
+    return context;
 };
 
-type State = {|
-    active: React.Node,
-    stack: Array<ComponentRenderFunction>,
-|};
+// Consumer Hook
+export const useNotificationManager = () =>
+    consumerContextProvider(React.useContext(NotificationContext));
 
-export default class NotificationManager extends React.Component<Props, State> {
-    el: HTMLDivElement;
+// Consumer renderprop API (< 16.8)
+export const NotificationConsumer = ({
+    children,
+}: {
+    children: NotificationContextType => React.Node,
+}) => (
+    <NotificationContext.Consumer>
+        {context => children(consumerContextProvider(context))}
+    </NotificationContext.Consumer>
+);
 
-    constructor() {
-        super();
+const initialState = {
+    active: null,
+    queue: [],
+};
 
-        window.document.body.appendChild(portalContainer);
-
-        this.el = window.document.createElement("div");
-    }
-
-    state = {
-        active: null,
-        stack: [],
-    };
-
-    componentDidMount() {
-        portalContainer.appendChild(this.el);
-    }
-
-    componentWillUnmount() {
-        portalContainer.removeChild(this.el);
-    }
-
-    createNotification = (component: ComponentRenderFunction) => {
-        this.setState(prevState => {
-            if (!prevState.active && prevState.stack.length === 0) {
+function NotificationManagerReducer(
+    state: NotificationManagerReducerState = initialState,
+    action: NotificationManagerReducerActions
+) {
+    switch (action.type) {
+        case "CREATE": {
+            if (!state.active && state.queue.length === 0) {
                 return {
-                    active: component({ close: this.closeNotification }),
+                    ...state,
+                    active: action.render(),
                 };
             }
             return {
-                stack: [...prevState.stack, component],
+                ...state,
+                queue: [...state.queue, action.render],
             };
-        });
-    };
-    closeNotification = () => {
-        this.setState(prevState => {
-            const stack = prevState.stack.slice(1);
-            const active = stack.length > 0 ? stack[0]({ close: this.closeNotification }) : null;
+        }
+        case "CLOSE": {
+            const queue = state.queue.slice(1);
+            const active = queue.length > 0 ? queue[0]() : null;
             return {
+                ...state,
                 active,
-                stack,
+                queue,
             };
-        });
-    };
-    render() {
-        const { children } = this.props;
-        return (
-            <Context.Provider
-                value={{
-                    createNotification: this.createNotification,
-                    closeNotification: this.closeNotification,
-                }}>
-                {children}
-                {ReactDOM.createPortal(this.state.active, this.el)}
-            </Context.Provider>
-        );
+        }
+        default:
+            return state;
     }
+}
+
+export function NotificationProvider({ children }: { children: React.Node }) {
+    const [{ active }, dispatch] = React.useReducer(NotificationManagerReducer, initialState);
+
+    const closeNotification = React.useCallback(() => dispatch({ type: "CLOSE" }), [dispatch]);
+
+    const createNotification = React.useCallback(
+        render => dispatch({ type: "CREATE", render: () => render({ close: closeNotification }) }),
+        [closeNotification, dispatch]
+    );
+
+    const contextValue = React.useMemo(() => ({ createNotification, closeNotification }), [
+        createNotification,
+        closeNotification,
+    ]);
+
+    return (
+        <NotificationContext.Provider value={contextValue}>
+            {children}
+            <Portal>{active}</Portal>
+        </NotificationContext.Provider>
+    );
 }

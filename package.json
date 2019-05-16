@@ -1,9 +1,7 @@
 {
     "name": "react-notification-manager",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "description": "Show notifications programmatically from your React components.",
-    "main": "dist/index.cjs.js",
-    "module": "dist/index.es.js",
     "repository": {
         "type": "git",
         "url": "https://github.com/erictooth/react-notification-manager.git"
@@ -21,57 +19,52 @@
     ],
     "sideEffects": false,
     "scripts": {
-        "build": "npm run lint && npm run build:flow && npm run build:js ",
-        "build:flow": "flow check && flow-copy-source src dist && cp dist/index.js.flow dist/index.cjs.js.flow && mv dist/index.js.flow dist/index.es.js.flow && flow-coverage-report -i src/**/*.js -x 'src/__tests__/**' -t html",
-        "build:js": "rollup -c rollup.config.js",
-        "lint": "eslint -c ./.eslintrc.js src/",
-        "test": "jest"
-    },
-    "files": [
-        "dist"
-    ],
-    "jest": {
-        "collectCoverage": true,
-        "setupFiles": [
-            "./test/jestsetup.js"
-        ]
+        "build": "npm run lint && npm run build:js ",
+        "build:js": "pack build",
+        "lint": "eslint -c ./.eslintrc.js src/"
     },
     "author": "Eric Mantooth",
     "license": "MIT",
     "devDependencies": {
-        "@babel/core": "^7.1.0",
-        "@babel/plugin-proposal-class-properties": "^7.1.0",
-        "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
-        "@babel/preset-env": "^7.1.0",
+        "@babel/core": "^7.4.4",
+        "@babel/plugin-proposal-object-rest-spread": "^7.4.4",
         "@babel/preset-flow": "^7.0.0",
         "@babel/preset-react": "^7.0.0",
+        "@pika/pack": "^0.3.7",
+        "@pika/plugin-build-node": "^0.3.16",
+        "@pika/plugin-build-web": "^0.3.16",
+        "@pika/plugin-standard-pkg": "^0.3.16",
         "babel-core": "^7.0.0-bridge.0",
         "babel-eslint": "^9.0.0",
-        "enzyme": "^3.6.0",
-        "enzyme-adapter-react-16.3": "^1.2.0",
         "eslint": "^5.6.0",
-        "eslint-config-prettier": "^3.0.1",
-        "eslint-plugin-flowtype": "^2.50.1",
-        "eslint-plugin-import": "^2.14.0",
-        "eslint-plugin-jest": "^21.22.0",
-        "eslint-plugin-prettier": "^2.6.2",
-        "eslint-plugin-react": "^7.11.1",
-        "flow-bin": "^0.83.0",
-        "flow-copy-source": "^2.0.2",
-        "flow-coverage-report": "^0.6.0",
-        "jest": "^23.6.0",
-        "jest-enzyme": "^6.1.2",
-        "prettier": "^1.14.3",
-        "react": "^16.3.0",
-        "react-dom": "^16.3.0",
-        "rollup": "^0.66.1",
-        "rollup-plugin-babel": "^4.0.3",
-        "rollup-plugin-commonjs": "^9.1.8",
-        "rollup-plugin-json": "^3.1.0",
-        "rollup-plugin-node-resolve": "^3.4.0"
+        "eslint-config-prettier": "^4.3.0",
+        "eslint-plugin-flowtype": "^3.9.0",
+        "eslint-plugin-prettier": "^3.1.0",
+        "eslint-plugin-react": "^7.13.0",
+        "eslint-plugin-react-hooks": "^1.6.0",
+        "flow-bin": "^0.98.1",
+        "flow-coverage-report": "^0.6.1",
+        "prettier": "^1.17.1",
+        "react": "^16.8.0",
+        "react-dom": "^16.8.0"
     },
     "peerDependencies": {
-        "react": "^16.3.0"
+        "react": "^16.8.0"
     },
-    "dependencies": {}
+    "dependencies": {
+        "reakit": "^1.0.0-beta.0"
+    },
+    "@pika/pack": {
+        "pipeline": [
+            [
+                "@pika/plugin-standard-pkg"
+            ],
+            [
+                "@pika/plugin-build-node"
+            ],
+            [
+                "@pika/plugin-build-web"
+            ]
+        ]
+    }
 }
