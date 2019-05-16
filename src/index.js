@@ -31,10 +31,9 @@ export const useNotificationManager = () => {
     const context = React.useContext(NotificationContext);
 
     if (!context) {
-        throw new Error(
-            "useNotificationManager and NotificationConsumer must be used within a NotificationProvider"
-        );
+        throw new Error("useNotificationManager must be used within a NotificationProvider");
     }
+
     return context;
 };
 
