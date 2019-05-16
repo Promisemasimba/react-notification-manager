@@ -1,6 +1,6 @@
 {
     "name": "react-notification-manager",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Show notifications programmatically from your React components.",
     "repository": {
         "type": "git",
