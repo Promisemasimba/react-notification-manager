@@ -2,9 +2,7 @@
 import * as React from "react";
 import ReactDOM from "react-dom";
 
-export const Context = React.createContext({
-    createNotification: () => undefined,
-});
+export const Context = React.createContext();
 
 let portalContainer: HTMLDivElement = window.document.createElement("div");
 
@@ -72,7 +70,11 @@ export default class NotificationManager extends React.Component<Props, State> {
     render() {
         const { children } = this.props;
         return (
-            <Context.Provider value={this.createNotification}>
+            <Context.Provider
+                value={{
+                    createNotification: this.createNotification,
+                    closeNotification: this.closeNotification,
+                }}>
                 {children}
                 {ReactDOM.createPortal(this.state.active, this.el)}
             </Context.Provider>
