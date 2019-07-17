@@ -21,7 +21,8 @@
     "scripts": {
         "build": "npm run lint && npm run build:js ",
         "build:js": "pack build",
-        "lint": "eslint -c ./.eslintrc.js src/"
+        "lint": "eslint -c ./.eslintrc.js src/",
+        "storybook": "start-storybook"
     },
     "author": "Eric Mantooth",
     "license": "MIT",
@@ -34,8 +35,11 @@
         "@pika/plugin-build-node": "^0.3.16",
         "@pika/plugin-build-web": "^0.3.16",
         "@pika/plugin-standard-pkg": "^0.3.16",
+        "@storybook/addon-storysource": "^5.1.9",
+        "@storybook/react": "^5.1.9",
         "babel-core": "^7.0.0-bridge.0",
         "babel-eslint": "^9.0.0",
+        "babel-loader": "^8.0.6",
         "eslint": "^5.6.0",
         "eslint-config-prettier": "^4.3.0",
         "eslint-plugin-flowtype": "^3.9.0",
