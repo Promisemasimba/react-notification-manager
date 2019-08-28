@@ -1,6 +1,6 @@
 {
     "name": "react-notification-manager",
-    "version": "1.0.1",
+    "version": "2.0.0",
     "description": "Show notifications programmatically from your React components.",
     "repository": {
         "type": "git",
@@ -21,47 +21,59 @@
     "scripts": {
         "build": "npm run lint && npm run build:js ",
         "build:js": "pack build",
-        "lint": "eslint -c ./.eslintrc.js src/",
+        "lint": "eslint src/**/*",
         "storybook": "start-storybook"
     },
     "author": "Eric Mantooth",
     "license": "MIT",
     "devDependencies": {
-        "@babel/core": "^7.4.4",
-        "@babel/plugin-proposal-object-rest-spread": "^7.4.4",
-        "@babel/preset-flow": "^7.0.0",
-        "@babel/preset-react": "^7.0.0",
-        "@pika/pack": "^0.3.7",
-        "@pika/plugin-build-node": "^0.3.16",
-        "@pika/plugin-build-web": "^0.3.16",
-        "@pika/plugin-standard-pkg": "^0.3.16",
+        "@erictooth/eslint-config": "^1.1.2",
+        "@erictooth/prettier-config": "^2.0.0",
+        "@pika/pack": "^0.4.0",
+        "@pika/plugin-build-node": "^0.4.0",
+        "@pika/plugin-build-web": "^0.4.0",
+        "@pika/plugin-ts-standard-pkg": "^0.4.0",
         "@storybook/addon-storysource": "^5.1.9",
         "@storybook/react": "^5.1.9",
+        "@types/react": "^16.8.23",
+        "@types/shortid": "0.0.29",
+        "awesome-typescript-loader": "^5.2.1",
         "babel-core": "^7.0.0-bridge.0",
         "babel-eslint": "^9.0.0",
         "babel-loader": "^8.0.6",
         "eslint": "^5.6.0",
-        "eslint-config-prettier": "^4.3.0",
-        "eslint-plugin-flowtype": "^3.9.0",
-        "eslint-plugin-prettier": "^3.1.0",
-        "eslint-plugin-react": "^7.13.0",
-        "eslint-plugin-react-hooks": "^1.6.0",
-        "flow-bin": "^0.98.1",
-        "flow-coverage-report": "^0.6.1",
         "prettier": "^1.17.1",
+        "react": "^16.8.0",
+        "react-docgen-typescript-loader": "^3.1.0",
+        "react-dom": "^16.8.0",
+        "typescript": "^3.5.3"
+    },
+    "peerDependencies": {
         "react": "^16.8.0",
         "react-dom": "^16.8.0"
     },
-    "peerDependencies": {
-        "react": "^16.8.0"
-    },
     "dependencies": {
-        "reakit": "^1.0.0-beta.0"
+        "reakit": "^1.0.0-beta.0",
+        "shortid": "^2.2.14"
     },
+    "prettier": "@erictooth/prettier-config",
+    "eslintConfig": {
+        "env": {
+            "browser": true
+        },
+        "extends": [
+            "@erictooth/eslint-config",
+            "@erictooth/eslint-config/react",
+            "@erictooth/eslint-config/typescript"
+        ]
+    },
+    "eslintIgnore": [
+        "src/**/__tests__"
+    ],
     "@pika/pack": {
         "pipeline": [
             [
-                "@pika/plugin-standard-pkg"
+                "@pika/plugin-ts-standard-pkg"
             ],
             [
                 "@pika/plugin-build-node"

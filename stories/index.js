@@ -2,61 +2,71 @@ import React from "react";
 
 import { storiesOf } from "@storybook/react";
 
-import { NotificationProvider, useNotificationManager } from "../src/index.js";
+import {
+    NotificationsProvider,
+    useNotificationManager,
+    createScopedNotificationManager,
+    StackedNotifications,
+} from "../src/index.ts";
 
-function SampleNotification({ close }) {
+const {
+    NotificationsProvider: ToastsProvider,
+    useNotificationManager: useToastsManager,
+} = createScopedNotificationManager();
+const {
+    NotificationsProvider: DialogsProvider,
+    useNotificationManager: useDialogsManager,
+} = createScopedNotificationManager();
+
+const stories = storiesOf("NotificationManager", /*eslint-disable-line no-undef*/ module);
+
+//eslint-disable-next-line react/prop-types
+const DemoComponent = React.memo(({ destroy }) => (
+    <div
+        style={{
+            background: "#ccc",
+            opacity: 0.75,
+            padding: "3em",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            position: "absolute",
+        }}>
+        <small>{Math.random()}</small>
+        <button onClick={destroy}>Close</button>
+    </div>
+));
+DemoComponent.displayName = "DemoComponent";
+
+function ControlComponent() {
+    const { create: createToast } = useToastsManager();
+    const { create: createDialog } = useDialogsManager();
     return (
-        <div
-            style={{
-                position: "fixed",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                background: "#ccc",
-                padding: "5em",
-            }}>
-            <button onClick={close}>Close</button>
+        <div>
+            <button onClick={() => createToast(DemoComponent)}>Create Toast</button>
+            <button onClick={() => createDialog(DemoComponent)}>Create Dialog</button>
         </div>
     );
 }
 
-function NotificationCreator() {
-    const { createNotification } = useNotificationManager();
-    return (
-        <button
-            onClick={() => createNotification(({ close }) => <SampleNotification close={close} />)}>
-            Open Notification
-        </button>
-    );
-}
-
-function NotificationEffect() {
-    const { createNotification } = useNotificationManager();
-    const [ready, setReady] = React.useState(false);
-
-    // This doesn't cover edge cases but is good enough for demo purposes
-    React.useEffect(() => {
-        if (ready) {
-            setTimeout(() => {
-                const {close} = createNotification(SampleNotification)
-                setReady(false);
-
-                setTimeout(() => {
-                    close();
-                }, 1000)
-            }, 1000)
-        }
-    }, [ready])
-
-    return <button onClick={() => setReady(true)} disabled={ready}>Start timer</button>;
-}
-
-const stories = storiesOf("NotificationManager", /*eslint-disable-line no-undef*/ module);
 stories.add("basic", () => {
+    const ControlComponent = () => {
+        const { create } = useNotificationManager();
+        return <button onClick={() => create(DemoComponent)}>Create Dialog</button>;
+    };
     return (
-        <NotificationProvider>
-            <NotificationCreator />
-            {/* <NotificationEffect /> */}
-        </NotificationProvider>
+        <NotificationsProvider>
+            <ControlComponent />
+        </NotificationsProvider>
+    );
+});
+
+stories.add("scoped", () => {
+    return (
+        <ToastsProvider render={StackedNotifications}>
+            <DialogsProvider>
+                <ControlComponent />
+            </DialogsProvider>
+        </ToastsProvider>
     );
 });
