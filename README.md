@@ -26,11 +26,11 @@ import { useNotificationManager } from "react-notification-manager";
 import Dialog from "./your-app/dialog";
 
 function App() {
-    const { createNotification } = useNotificationManager();
+    const { create } = useNotificationManager();
 
     return (
         <button
-            onClick={createNotification(({ close }) => (
+            onClick={create(({ close }) => (
                 <Dialog onClose={close} />
             ))}>
             Open Dialog
