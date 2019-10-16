@@ -5,7 +5,7 @@ Typical usage involves wrapping your entire app with a `<NotificationProvider>`:
 ```jsx
 import * as React from "react";
 import ReactDOM from "react-dom";
-import { NotificationProvider } from "react-notification-manager";
+import { NotificationsProvider } from "react-notification-manager";
 import App from "./App";
 
 ReactDOM.render(
